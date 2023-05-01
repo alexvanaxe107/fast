@@ -31,6 +31,14 @@ class User(BaseModel):
     username: str
     full_name: str | None = None
 
+    class Config:
+        schema_extra = {
+                "example": {
+                    "username": "Ericao",
+                    "full_name": "Ericao de Moletao"
+                    }
+                }
+
 app = FastAPI()
 
 @app.get("/")
@@ -72,6 +80,10 @@ async def read_items_val_path(
 async def create_item(item: Item):
     item.desc = item.desc + " To de olho"
     return {"new_item": item}
+
+@app.post("/user/")
+async def create_user(user: User):
+    return {"new_user": user}
 
 @app.put("/items/{item_id}")
 async def update_item(
