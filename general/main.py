@@ -1,5 +1,5 @@
-from typing import Annotated
-from fastapi import Body, FastAPI, Query, Path
+from typing import Annotated, Any
+from fastapi import Body, FastAPI, Query, Path, status
 from pydantic import BaseModel
 
 """
@@ -59,8 +59,12 @@ async def test3(pvalue: str, qvalue: str = ""):
     return {"valor": qvalue, "pvalue": pvalue}
 
 # Declaring a non required field
-@app.get("/items/")
+@app.get("/items/", response_description="Uma lista de itens.")
 async def read_items(q: str | None = "Value"):
+    """ 
+    Demonstracao da configuracao response description. Caso nenhuma seja fornecida, 
+    sera retornada a padrao 'Sucessful response'
+    """
     return {}
 
 @app.get("/itemsrestr/")
@@ -76,14 +80,20 @@ async def read_items_val_path(
         valval: Annotated[str, Path(max_length=10)]):
     return {"val": valval}
 
-@app.post("/items/")
+@app.post("/items/", tags=["Items"])
 async def create_item(item: Item):
+    """
+    Demonstracao de tags.
+    """
     item.desc = item.desc + " To de olho"
     return {"new_item": item}
 
 @app.post("/user/")
-async def create_user(user: User):
-    return {"new_user": user}
+async def create_user(user: User, status_code=status.HTTP_201_CREATED) -> User:
+    """
+    Exemplo contendo um retorno e uma configuracao de status de retorno.
+    """
+    return user
 
 @app.put("/items/{item_id}")
 async def update_item(
