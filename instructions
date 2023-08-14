@@ -1,0 +1,3 @@
+To start uvicorn run:
+
+uvicorn main:app --reload

@@ -1,5 +1,5 @@
 from typing import Annotated, Any
-from fastapi import Body, FastAPI, Query, Path, status
+from fastapi import Body, FastAPI, HTTPException, Query, Path, status
 from pydantic import BaseModel
 
 """
@@ -78,6 +78,9 @@ async def read_rest_items(q: Annotated[str | None, Query(max_length=50)] = None)
 @app.get("/itempath/{valval}/$")
 async def read_items_val_path(
         valval: Annotated[str, Path(max_length=10)]):
+    """ Sample of an exception with an error code """
+    if valval == "erro":
+        raise HTTPException(status_code=404, detail="Sorry pal, could not find it.")
     return {"val": valval}
 
 @app.post("/items/", tags=["Items"])
