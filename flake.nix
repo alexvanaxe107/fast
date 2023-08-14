@@ -5,14 +5,10 @@
 
     outputs = { self, nixpkgs, ...}@inputs:
     let
-      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
     in
     {
-      packages = forAllSystems (system:
-        {
-            devShells.${system}.default = import ./shell.nix { inherit pkgs; };
-        });
+        devShells.x86_64-linux.default = import ./shell.nix { inherit pkgs; };
 
-    }
+    };
 }
