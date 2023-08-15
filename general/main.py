@@ -1,5 +1,5 @@
-from typing import Annotated, Any
-from fastapi import Body, FastAPI, HTTPException, Query, Path, status
+from typing import Annotated, Any, Union
+from fastapi import Body, Depends, FastAPI, HTTPException, Query, Path, status
 from pydantic import BaseModel
 
 """
@@ -38,6 +38,13 @@ class User(BaseModel):
                     "full_name": "Ericao de Moletao"
                     }
                 }
+
+# Here we can see some code example for dependency injection
+class CommonQueryParams:
+    def __init__(self, q:Union[str, None] = None, skip: int = 0, limit: int = 100):
+        self.q = q
+        self.skip = skip
+        self.limit = limit
 
 app = FastAPI()
 
@@ -97,6 +104,16 @@ async def create_user(user: User, status_code=status.HTTP_201_CREATED) -> User:
     Exemplo contendo um retorno e uma configuracao de status de retorno.
     """
     return user
+
+# Here is the code using the dep injection class
+@app.get("/itemsdep/")
+async def read_items_di(commons: Annotated[CommonQueryParams, Depends()]):
+    """
+    This is the same as:
+    async def read_items_di(commons: Annotated[CommonQueryParams, Depends(CommonQueryParams)])
+    as a matter of fact, the dependency used by fast is the one inside Depends
+    """
+    return commons.q
 
 @app.put("/items/{item_id}")
 async def update_item(
